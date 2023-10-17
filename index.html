@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Recette de Coq au Vin</title>
     <style>
-        /* Add your CSS styles here */
+        /* Your Original CSS */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -39,12 +39,29 @@
         a:hover {
             text-decoration: underline;
         }
+
+        /* CSS for Postcode Intellisense */
+        #suggestion-box {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+        }
+
+        #suggestion-box div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #suggestion-box div:hover {
+            background-color: #eee;
+        }
     </style>
 </head>
 <body>
     <h1>Recette de Coq au Vin</h1>
-    <!-- Add other HTML elements as needed -->
     <p>Page créée par [Your Name], le [Date]</p>
+
     <h2>À propos du plat</h2>
     <p>Le <b>Coq au Vin</b> est un plat traditionnel français, couramment préparé et apprécié dans tout le pays. 
     C'est un mélange <i>délicieux</i> de poulet, de légumes et de vin rouge. Vous allez <b>adorer</b> la richesse 
@@ -70,6 +87,45 @@
     <hr>
     <a href="https://www.carrefour.fr/" target="_blank">Achetez les ingrédients ici</a>
     <hr>
-    <p>Page créée par ChatGPT, le 15 octobre 2023</p>
+     <!-- Postcode Intellisense Section -->
+    <h2>Find a Store Near You (in the UK)</h2>
+    <input type="text" id="postcode" placeholder="Enter UK postcode">
+    <div id="suggestion-box"></div>
+
+    <script>
+        document.getElementById('postcode').addEventListener('input', async function() {
+            const query = this.value;
+            
+            if(query.length < 3) { // You can adjust this condition
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.postcodes.io/postcodes/${query}/autocomplete`);
+                const data = await response.json();
+                
+                if(data.result) {
+                    displaySuggestions(data.result);
+                }
+            } catch(error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function displaySuggestions(suggestions) {
+            const suggestionBox = document.getElementById('suggestion-box');
+            suggestionBox.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const div = document.createElement('div');
+                div.textContent = suggestion;
+                div.addEventListener('click', () => {
+                    document.getElementById('postcode').value = suggestion;
+                    suggestionBox.innerHTML = '';
+                });
+                suggestionBox.appendChild(div);
+            });
+        }
+    </script>
 </body>
 </html>
